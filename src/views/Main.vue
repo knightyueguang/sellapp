@@ -1,46 +1,61 @@
 <template>
-    <div>
-        <!-- 容器页面 -->
-        <!-- 头部 -->
-        <div class="top" :style="{backgroundImage:'url('+data.avatar+')'}">
-            <!-- 商家信息 -->
-            <div class="message">
-                <div class="img">
-                    <img :src="data.avatar" alt="">
-                </div>
-                <div class="txt">
-                    <p><span class="pp">品牌</span><span class="title">{{data.name}}</span></p>
-                    <p><span>{{data.description}}</span> / <span>{{data.deliveryTime}}分钟送达</span></p>
-                    <p><span class="jian">减</span>{{data.supports?data.supports[0].description:''}}</p>
-                </div>
-                <div class="picture">5个></div>
-            </div>
-            <!-- 公告 -->
-            <div class="ad">
-                <span class="ad_box">公告</span>
-                {{data.bulletin}}
-            </div>
+  <div>
+    <!-- 容器页面 -->
+    <!-- 头部 -->
+    <div class="top" :style="{backgroundImage:'url('+data.avatar+')'}">
+      <!-- 商家信息 -->
+      <div class="message">
+        <div class="img">
+          <img :src="data.avatar" alt />
         </div>
-
-        <div class="router-link-div">
-            <div><router-link to="/goods">商品</router-link></div>
-            <div><router-link to="/evaluate">评价</router-link></div>
-            <div><router-link to="/merchant">商家</router-link></div>
+        <div class="txt">
+          <p>
+            <span class="pp">品牌</span>
+            <span class="title">{{data.name}}</span>
+          </p>
+          <p>
+            <span>{{data.description}}</span> /
+            <span>{{data.deliveryTime}}分钟送达</span>
+          </p>
+          <p>
+            <span class="jian">减</span>
+            {{data.supports?data.supports[0].description:''}}
+          </p>
         </div>
-        <!-- 二路由出口 -->
-        <router-view></router-view>
-
-        <div class="shopcar-bar">
-           <div class="shopcar-box1">
-             <img src="../assets/imgs/car.png">
-             <span class="price">￥0</span>
-             <span class="song">另需配送费￥4元</span>
-           </div>
-           <div class="shopcar-box2">
-             ￥20起送
-           </div>
-        </div>
+        <div class="picture">5个></div>
+      </div>
+      <!-- 公告 -->
+      <div class="ad">
+        <span class="ad_box">公告</span>
+        {{data.bulletin}}
+      </div>
     </div>
+
+    <div class="router-link-div">
+      <div>
+        <router-link to="/goods">商品</router-link>
+      </div>
+      <div>
+        <router-link to="/evaluate">评价</router-link>
+      </div>
+      <div>
+        <router-link to="/merchant">商家</router-link>
+      </div>
+    </div>
+    <!-- 二路由出口 -->
+    <router-view></router-view>
+    <transition name="slide-fade">
+      <div v-show="shopcarShow" class="shopcar-board">购物车板子</div>
+    </transition>
+    <div @click="shopcarShow = !shopcarShow" class="shopcar-bar">
+      <div class="shopcar-box1">
+        <img src="../assets/imgs/car.png" />
+        <span class="price">￥0</span>
+        <span class="song">另需配送费￥4元</span>
+      </div>
+      <div class="shopcar-box2">￥20起送</div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -91,7 +106,8 @@ export default {
           "北京市昌平区回龙观西大街龙观置业大厦底商B座102单元1340",
           "营业时间:10:00-20:30"
         ]
-      }
+      },
+      shopcarShow: false
     };
   },
   created() {
@@ -259,5 +275,26 @@ export default {
     color: rgb(146, 146, 146);
     background: rgb(58, 57, 57);
   }
+}
+.shopcar-board{
+  position: fixed;
+  height: 60px;
+  width: 1000%;
+  bottom: 60px;
+  background-color: pink;
+}
+
+/* 可以设置不同的进入和离开动画 */
+/* 设置持续时间和动画函数 */
+.slide-fade-enter-active {
+  transition: all 0.4s ease;
+}
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active for below version 2.1.8 */ {
+  transform: translateY(200px);
+  opacity: 0;
 }
 </style>

@@ -5,7 +5,7 @@
         <div class="goods_name">
           <div
             :class="{goods_name_title:true,active:i==goodsIndex}"
-            v-for="(v,i) in this.data"
+            v-for="(v,i) in this.goodslist"
             :key="i"
             @click="activename(i)"
           >{{v.name}}</div>
@@ -14,9 +14,9 @@
     </div>
     <div class="goods-right">
       <ul class="content">
-        <div :id="i" v-for="(v,i) in this.data" :key="i">
+        <div :id="i" v-for="(v,i) in goodslist" :key="i">
           <p class="tit">{{v.name}}</p>
-          <div  v-for="(x,y) in data[i].foods" :key="y" class="goods-r">
+          <div v-for="(x,y) in v.foods" :key="y" class="goods-r">
             <div class="goodsimg">
               <img :src="x.image" alt />
             </div>
@@ -27,7 +27,9 @@
                 <span class="money01">￥{{x.price}}</span>
                 <span class="money02">{{x.oldPrice}}</span>
                 <span class="add">
-                  <Icon type="md-add-circle" />>
+                  <button v-show="x.num>=1" @click="clickadd(x.name,-1)">-</button>
+                  <span v-show="x.num>=1">{{x.num}}</span>
+                  <button @click="clickadd(x.name,1)">+</button>
                 </span>
               </p>
             </div>
@@ -44,27 +46,57 @@ import BScroll from "better-scroll";
 export default {
   data() {
     return {
-      data: {},
       goodsIndex: 0
     };
   },
   created() {
     getGoods().then(res => {
-      this.data = res.data.data;
+      this.$store.commit("initGoodslist", res.data.data);
     });
   },
   mounted() {
     new BScroll(document.querySelector(".goods_left"), {
       click: true
     });
-    this.goodsright =  new BScroll(document.querySelector(".goods-right"), {
-      click: true
+    this.goodsright = new BScroll(document.querySelector(".goods-right"), {
+      click: true,
+      probeType: 3
+    });
+    this.goodsright.on("scroll", ({ y }) => {
+      let _y = Math.abs(y);
+      for (let divobj of this.getDivMath) {
+        if (_y >= divobj.min && _y < divobj.max) {
+          this.goodsIndex = divobj.index;
+          return;
+        }
+      }
     });
   },
   methods: {
     activename(i) {
       this.goodsIndex = i;
       this.goodsright.scrollToElement(document.getElementById(i), 600);
+    },
+    clickadd(name, val) {
+      this.$store.commit("addnum", {
+        name,
+        val
+      });
+    }
+  },
+  computed: {
+    getDivMath() {
+      var arr = [];
+      var total = 0;
+      for (let i = 0; i < this.goodslist.length; i++) {
+        let curDivHeight = document.getElementById(i).offsetHeight;
+        arr.push({ min: total, max: total + curDivHeight, index: i });
+        total += curDivHeight;
+      }
+      return arr;
+    },
+    goodslist() {
+      return this.$store.state.goodslist;
     }
   }
 };

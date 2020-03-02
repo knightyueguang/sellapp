@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <h2>商家</h2>
+    <div id="shopcar">
+        我是购物车
     </div>
 </template>
 
